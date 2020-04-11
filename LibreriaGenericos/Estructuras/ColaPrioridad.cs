@@ -7,6 +7,7 @@ using EstructuraDato_Lab04.LibreriaGenericos.Interfaces;
 
 namespace EstructuraDato_Lab04.LibreriaGenericos.Estructuras
 {
+    //INICIO COLA
     public class ColaPrioridad<T> :EstructuraBase<T> , IEnumerable<T>
     {
         private Nodo<T> First { get; set; }
