@@ -5,9 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Clases\" />
-    <Folder Include="LibreriaGenericos\Estructuras\" />
-    <Folder Include="LibreriaGenericos\Interfaces\" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.1" />
   </ItemGroup>
 
 

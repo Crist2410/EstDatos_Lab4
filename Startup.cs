@@ -50,7 +50,7 @@ namespace EstructuraDato_Lab04
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Encargado}/{action=InicioApp}/{id?}");
             });
         }
     }
