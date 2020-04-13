@@ -108,6 +108,12 @@ C:\Users\Crist\Desktop\EstructuraDato_Lab04\bin\Debug\netcoreapp3.1\zh-Hant\Micr
 C:\Users\Crist\Desktop\EstructuraDato_Lab04\obj\Debug\netcoreapp3.1\EstructuraDato_Lab04.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\Crist\Desktop\EstructuraDato_Lab04\obj\Debug\netcoreapp3.1\Razor\Views\Encargado\Principal.cshtml.g.cs
 C:\Users\Crist\Desktop\EstructuraDato_Lab04\obj\Debug\netcoreapp3.1\Razor\Views\Encargado\IniciarSesion.cshtml.g.cs
-C:\Users\Crist\Desktop\EstructuraDato_Lab04\obj\Debug\netcoreapp3.1\Razor\Views\Encargado\AgregarDesarrolar.cshtml.g.cs
 C:\Users\Crist\Desktop\EstructuraDato_Lab04\obj\Debug\netcoreapp3.1\Razor\Views\Encargado\AgregarTarea.cshtml.g.cs
 C:\Users\Crist\Desktop\EstructuraDato_Lab04\obj\Debug\netcoreapp3.1\Razor\Views\Encargado\EscogerDesarrollador.cshtml.g.cs
+C:\Users\Crist\Desktop\EstructuraDato_Lab04\obj\Debug\netcoreapp3.1\Razor\Views\Encargado\IndexEncargado.cshtml.g.cs
+C:\Users\Crist\Desktop\EstructuraDato_Lab04\obj\Debug\netcoreapp3.1\Razor\Views\Encargado\VerDesarrolladores.cshtml.g.cs
+C:\Users\Crist\Desktop\EstructuraDato_Lab04\obj\Debug\netcoreapp3.1\Razor\Views\Encargado\AgregarDesarrollador.cshtml.g.cs
+C:\Users\Crist\Desktop\EstructuraDato_Lab04\obj\Debug\netcoreapp3.1\Razor\Views\Encargado\EditarDatos.cshtml.g.cs
+C:\Users\Crist\Desktop\EstructuraDato_Lab04\obj\Debug\netcoreapp3.1\Razor\Views\Encargado\VerTareas.cshtml.g.cs
+C:\Users\Crist\Desktop\EstructuraDato_Lab04\obj\Debug\netcoreapp3.1\Razor\Views\Encargado\VerTareaDesarrollador.cshtml.g.cs
+C:\Users\Crist\Desktop\EstructuraDato_Lab04\obj\Debug\netcoreapp3.1\Razor\Views\Encargado\EliminarTarea.cshtml.g.cs

@@ -1,11 +1,10 @@
 ﻿@model IEnumerable<EstructuraDato_Lab04.Models.Desarrolladores>
 
 @{
-    ViewData["Title"] = "EscogerDesarrollador";
+    ViewData["Title"] = "VerDesarrolladores";
 }
 
-<h1>Escoger Desarrollador</h1>
-
+<h1>Ver Desarrolladores</h1>
 
 <table class="table">
     <thead>
@@ -36,13 +35,15 @@
                     @Html.DisplayFor(modelItem => item.Apellido)
                 </td>
                 <td>
-                    @Html.ActionLink("Ver Tarea", "VerTarea", new { idDV = item.Id }) 
+                    @Html.ActionLink("Agregar Tarea", "AgregarTarea", new { idDV = item.Id })|
+                    @Html.ActionLink("Finalizar Tarea", "EliminarTarea", new { idDV = item.Id })
                 </td>
             </tr>
         }
     </tbody>
 </table>
+ @TempData["Mensaje"]
+<hr />
 <div>
-    <a class="btn btn-outline-info" asp-action="Principal">Regresar</a>
+    <a asp-action="IndexEncargado" class="btn btn-outline-dark">Regresar</a>
 </div>
-@TempData["Mensaje"]

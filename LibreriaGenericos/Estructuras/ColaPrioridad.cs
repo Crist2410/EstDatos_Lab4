@@ -14,7 +14,10 @@ namespace EstructuraDato_Lab04.LibreriaGenericos.Estructuras
         {
             Insertar(value);
         }
-
+        public T Get()
+        {
+            return Obtener();
+        }
         public T Delete()
         {
             var Valor = Obtener();
