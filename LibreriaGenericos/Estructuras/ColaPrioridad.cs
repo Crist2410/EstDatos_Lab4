@@ -8,53 +8,142 @@ using EstructuraDato_Lab04.LibreriaGenericos.Interfaces;
 namespace EstructuraDato_Lab04.LibreriaGenericos.Estructuras
 {
     //INICIO COLA
-    public class ColaPrioridad<T> :EstructuraBase<T> , IEnumerable<T>
+    public class ColaPrioridad<T> : EstructuraBase<T>, IEnumerable<T>
     {
-        private Nodo<T> First { get; set; }
-        public void Add(T value)
+        int CantidadNodos;
+        Nodo<T> First = new Nodo<T>();
+        public void Add(T value, Delegate Delegado)
         {
-            Insertar(value);
+            Insertar(value, First, Delegado);
         }
 
-        public T Delete()
+        public T Delete(Delegate Delegado)
         {
             var Valor = Obtener();
-            Borrar();
+            int Nivel = CalcularNivel();
+            Borrar(Valor, First, Nivel);
+            T Aux = First.Valor;
+            OrdenamientoBorrar(First, Aux, Delegado);
+            CantidadNodos--;
             return Valor;
         }
-        protected override void Insertar(T value)
+
+        public void OrdenamientoInsertar(Nodo<T> NodoRaiz, T Aux, Delegate Delegado)
         {
-            if (First == null)
+            if (Chequeo(NodoRaiz))
             {
-                First = new Nodo<T>
+                if (Convert.ToInt32(Delegado.DynamicInvoke(NodoRaiz.Valor, NodoRaiz.Izquierda.Valor)) == 1)
                 {
-                    Valor = value,
-                    Siguiente = null
-                };
+                    NodoRaiz.Valor = NodoRaiz.Izquierda.Valor;
+                    NodoRaiz.Izquierda.Valor = Aux;
+                }
+                if (Convert.ToInt32(Delegado.DynamicInvoke(NodoRaiz.Valor, NodoRaiz.Derecha.Valor)) == 1)
+                {
+                    NodoRaiz.Valor = NodoRaiz.Derecha.Valor;
+                    NodoRaiz.Derecha.Valor = Aux;
+                }
+            }
+            else if (NodoRaiz.Derecha.Valor == null)
+            {
+                if (Convert.ToInt32(Delegado.DynamicInvoke(NodoRaiz.Valor, NodoRaiz.Izquierda.Valor)) == 1)
+                {
+                    NodoRaiz.Valor = NodoRaiz.Izquierda.Valor;
+                    NodoRaiz.Izquierda.Valor = Aux;
+                }
+            }
+        }
+
+        void OrdenamientoBorrar(Nodo<T> NodoRaiz, T Aux, Delegate Delegado)
+        {
+            if (NodoRaiz.Derecha != null)
+            {
+                if (Convert.ToInt32(Delegado.DynamicInvoke(NodoRaiz.Derecha.Valor, NodoRaiz.Izquierda.Valor)) == 1)
+                {
+                    if (Convert.ToInt32(Delegado.DynamicInvoke(NodoRaiz.Derecha.Valor, NodoRaiz.Valor)) == 1)
+                    {
+                        NodoRaiz.Valor = NodoRaiz.Derecha.Valor;
+                        NodoRaiz.Derecha.Valor = Aux;
+                        Aux = NodoRaiz.Valor;
+                        OrdenamientoBorrar(NodoRaiz.Derecha, Aux, Delegado);
+                    }
+                }
+                else if (Convert.ToInt32(Delegado.DynamicInvoke(NodoRaiz.Izquierda.Valor, NodoRaiz.Derecha.Valor)) == 1)
+                {
+                    if (Convert.ToInt32(Delegado.DynamicInvoke(NodoRaiz.Izquierda.Valor, NodoRaiz.Valor)) == 1)
+                    {
+                        NodoRaiz.Valor = NodoRaiz.Izquierda.Valor;
+                        NodoRaiz.Izquierda.Valor = Aux;
+                        Aux = NodoRaiz.Valor;
+                        OrdenamientoBorrar(NodoRaiz.Derecha, Aux, Delegado);
+                    }
+                }
             }
             else
             {
-                var current = First;
-                while (current.Siguiente != null)
+                if (Convert.ToInt32(Delegado.DynamicInvoke(NodoRaiz.Izquierda.Valor, NodoRaiz.Valor)) == 1)
                 {
-                    current = current.Siguiente;
+                    NodoRaiz.Valor = NodoRaiz.Izquierda.Valor;
+                    NodoRaiz.Izquierda.Valor = Aux;
+                    Aux = NodoRaiz.Valor;
+                    OrdenamientoBorrar(NodoRaiz.Derecha, Aux, Delegado);
                 }
-                current.Siguiente = new Nodo<T>
-                {
-                    Valor = value,
-                    Siguiente = null
-                };
             }
         }
 
-
-        protected override void Borrar()
+        bool Chequeo(Nodo<T> NodoRaiz)
         {
-            if (First != null)
+            if (NodoRaiz.Izquierda.Valor != null && NodoRaiz.Derecha.Valor != null)
+                return true;
+            else
+                return false;
+        }
+
+        protected override void Insertar(T Valor, Nodo<T> NodoRaiz, Delegate Delegado)
+        {
+            if (NodoRaiz.Valor == null)
             {
-                First = First.Siguiente;
+                NodoRaiz.Valor = Valor;
+                NodoRaiz.Derecha = new Nodo<T>();
+                NodoRaiz.Izquierda = new Nodo<T>();
+                CantidadNodos++;
+                NodoRaiz.Posicion = CantidadNodos;
+            }
+            else if (NodoRaiz.Izquierda.Valor == null && NodoRaiz.Derecha.Valor == null)
+                Insertar(Valor, NodoRaiz.Izquierda, Delegado);
+            else if (NodoRaiz.Izquierda.Valor != null && NodoRaiz.Derecha.Valor == null)
+                Insertar(Valor, NodoRaiz.Derecha, Delegado);
+            else
+            {
+                if (Chequeo(NodoRaiz.Izquierda))
+                    Insertar(Valor, NodoRaiz.Derecha, Delegado);
+                else
+                    Insertar(Valor, NodoRaiz.Izquierda, Delegado);
             }
 
+            if (NodoRaiz.Derecha.Valor != null || NodoRaiz.Izquierda.Valor != null)
+            {
+                T Aux = NodoRaiz.Valor;
+                OrdenamientoInsertar(NodoRaiz, Aux, Delegado);
+            }
+
+        }
+
+        int CalcularNivel()
+        {
+            return Convert.ToInt32((Math.Log(Math.E, Convert.ToDouble(CantidadNodos)) / (Math.Log(Math.E, Convert.ToDouble(2)))));
+        }
+
+        protected override void Borrar(T valor, Nodo<T> NodoRaiz, int Nivel)
+        {
+            var Aux = NodoRaiz.Valor;
+            while (NodoRaiz.Posicion != CantidadNodos)
+            {
+                if ((CantidadNodos / (2 ^ (Nivel - 1))) % 2 == 0)
+                    Borrar(valor, NodoRaiz.Izquierda, Nivel--);
+                else if ((CantidadNodos / (2 ^ (Nivel - 1))) % 2 == 0)
+                    Borrar(valor, NodoRaiz.Derecha, Nivel--);
+            }
+            NodoRaiz = null;
         }
 
         protected override T Obtener()
@@ -67,13 +156,15 @@ namespace EstructuraDato_Lab04.LibreriaGenericos.Estructuras
             var queueCopy = this;
             while (queueCopy.First != null)
             {
-                yield return queueCopy.Delete();
+                //yield return queueCopy.Delete();
             }
+            throw new NotImplementedException();
+
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return GetEnumerator();
+            throw new NotImplementedException();
         }
     }
 }

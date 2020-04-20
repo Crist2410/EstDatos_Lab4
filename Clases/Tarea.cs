@@ -13,6 +13,7 @@ namespace EstructuraDato_Lab04.Models
         public string Proyecto { get; set; }
         public DateTime Fecha { get; set; }
         public int IdDesarrollador { get; set; }
+        public int Prioridad { get; set; }
 
     }
 }

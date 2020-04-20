@@ -111,3 +111,13 @@ C:\Users\Crist\Desktop\EstructuraDato_Lab04\obj\Debug\netcoreapp3.1\Razor\Views\
 C:\Users\Crist\Desktop\EstructuraDato_Lab04\obj\Debug\netcoreapp3.1\Razor\Views\Encargado\AgregarDesarrolar.cshtml.g.cs
 C:\Users\Crist\Desktop\EstructuraDato_Lab04\obj\Debug\netcoreapp3.1\Razor\Views\Encargado\AgregarTarea.cshtml.g.cs
 C:\Users\Crist\Desktop\EstructuraDato_Lab04\obj\Debug\netcoreapp3.1\Razor\Views\Encargado\EscogerDesarrollador.cshtml.g.cs
+C:\Users\Jose Giron\Desktop\Programas estructuras\EstDatos_Lab4\obj\Debug\netcoreapp3.1\EstructuraDato_Lab04.csprojAssemblyReference.cache
+C:\Users\Jose Giron\Desktop\Programas estructuras\EstDatos_Lab4\obj\Debug\netcoreapp3.1\staticwebassets\EstructuraDato_Lab04.StaticWebAssets.Manifest.cache
+C:\Users\Jose Giron\Desktop\Programas estructuras\EstDatos_Lab4\obj\Debug\netcoreapp3.1\staticwebassets\EstructuraDato_Lab04.StaticWebAssets.xml
+C:\Users\Jose Giron\Desktop\Programas estructuras\EstDatos_Lab4\obj\Debug\netcoreapp3.1\EstructuraDato_Lab04.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\Jose Giron\Desktop\Programas estructuras\EstDatos_Lab4\obj\Debug\netcoreapp3.1\EstructuraDato_Lab04.RazorAssemblyInfo.cache
+C:\Users\Jose Giron\Desktop\Programas estructuras\EstDatos_Lab4\obj\Debug\netcoreapp3.1\EstructuraDato_Lab04.RazorAssemblyInfo.cs
+C:\Users\Jose Giron\Desktop\Programas estructuras\EstDatos_Lab4\obj\Debug\netcoreapp3.1\EstructuraDato_Lab04.AssemblyInfoInputs.cache
+C:\Users\Jose Giron\Desktop\Programas estructuras\EstDatos_Lab4\obj\Debug\netcoreapp3.1\EstructuraDato_Lab04.AssemblyInfo.cs
+C:\Users\Jose Giron\Desktop\Programas estructuras\EstDatos_Lab4\obj\Debug\netcoreapp3.1\EstructuraDato_Lab04.dll
+C:\Users\Jose Giron\Desktop\Programas estructuras\EstDatos_Lab4\obj\Debug\netcoreapp3.1\EstructuraDato_Lab04.pdb
