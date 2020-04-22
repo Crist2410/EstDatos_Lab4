@@ -7,16 +7,22 @@ using EstructuraDato_Lab04.Models;
 
 namespace EstructuraDato_Lab04.LibreriaGenericos.Estructuras
 {
-    public class TablaHash
+    public class TablaHash<T>   
     {
-        //S,R,N,D,L,C
+        int TotalPocisiones = 75;
+        T[] empleados = new T[75];
         public int ObtenerValorHash(string Nombre)
         {
             string DatoHash = Nombre.ToLower();
             int Valor = (DatoHash.Length)*19;
+            char Letra = 'a';
             //Vocales
-            if (DatoHash.Contains('a'))
+            if (DatoHash.Contains(Letra))
+            {
                 Valor *= 3;
+                Valor *= (from letra in cadena where c == DatoHash select c).Count();
+
+            }
             if (DatoHash.Contains('e'))
                 Valor *= 5;
             if (DatoHash.Contains('i'))
