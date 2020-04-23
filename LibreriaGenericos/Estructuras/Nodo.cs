@@ -7,7 +7,9 @@ namespace EstructuraDato_Lab04.LibreriaGenericos.Estructuras
 {
     public class Nodo<T>
     {
-        public Nodo<T> Siguiente { get; set; }
+        public Nodo<T> Izquierda { get; set; }
+        public Nodo<T> Derecha { get; set; }
         public T Valor { get; set; }
+        public int Posicion { get; set; }
     }
 }

@@ -66,8 +66,9 @@ namespace EstructuraDato_Lab04.Controllers
                         Titulo = TareaAux.Titulo,
                         Prioridad = TareaAux.Prioridad
                     };
-                    LiderDV.EmpleadosDV.Find(x => x.Id == TareaAux.IdDesarrollador).TareasDV.Add(TareaColaAux);
-                    LiderDV.HashTable.TablaTareas.Add(TareaAux);
+                    LiderDV.EmpleadosDV.Find(x => x.Id == TareaAux.IdDesarrollador).TareasDV.Add(TareaColaAux, TareaColaAux.CompararID);
+                    int Pos = LiderDV.HashTable.ObtenerValorHash(TareaAux.Titulo);
+                    LiderDV.HashTable.Añadir(TareaAux,Pos,TareaAux.CompararTitulo);
                 }
             }
         }
@@ -122,11 +123,11 @@ namespace EstructuraDato_Lab04.Controllers
 
 
         //Crear Tarea
-        public ActionResult AgregarTarea(int id)
+        public ActionResult AgregarTarea(int idDV)
         {
             Tarea AuxTarea = new Tarea
             {
-                IdDesarrollador = id
+                IdDesarrollador = idDV
             };
             return View(AuxTarea);
         }
@@ -149,8 +150,9 @@ namespace EstructuraDato_Lab04.Controllers
                 Titulo = AuxTarea.Titulo,
                 Prioridad = AuxTarea.Prioridad
             };
-            LiderDV.EmpleadosDV.Find(x => x.Id == AuxTarea.IdDesarrollador).TareasDV.Add(TareaColaAux);
-            LiderDV.HashTable.TablaTareas.Add(AuxTarea);
+            LiderDV.EmpleadosDV.Find(x => x.Id == AuxTarea.IdDesarrollador).TareasDV.Add(TareaColaAux, TareaColaAux.CompararID);
+            int Pos = LiderDV.HashTable.ObtenerValorHash(AuxTarea.Titulo);
+            LiderDV.HashTable.Añadir(AuxTarea, Pos, AuxTarea.CompararTitulo);
             string Texto = AuxTarea.Id+",\""+AuxTarea.Titulo+"\",\"" + AuxTarea.Descripccion + "\",\"" +
             AuxTarea.Proyecto + "\",\"" + AuxTarea.Fecha.ToString() + "\","+AuxTarea.IdDesarrollador+","+ AuxTarea.Prioridad;
             EscribirCSV(Texto, @"Documentos\\Tareas.csv");
@@ -159,13 +161,17 @@ namespace EstructuraDato_Lab04.Controllers
         // Ver Desarrolladores
         public ActionResult VerDesarrolladores()
         {
+            
             ViewBag.Desarrolladores = LiderDV.EmpleadosDV;
             return View();
         }
         //Ver Tareas
         public ActionResult VerTareas()
         {
-            ViewBag.Tareas = LiderDV.HashTable.TablaTareas;
+            Tarea AuxTarea = new Tarea();
+            List<Tarea> Lista = LiderDV.HashTable.Mostrar();
+            Lista.Sort(AuxTarea.CompararID);
+            ViewBag.Tareas = Lista;
             return View();
         }
         //Agregar Desarrollador
@@ -225,8 +231,15 @@ namespace EstructuraDato_Lab04.Controllers
             {
                 Desarrolladores AuxDesarrollador = LiderDV.EmpleadosDV.Find(x => x.Id == idDV);
                 ViewBag.Nombre = AuxDesarrollador.Nombre + AuxDesarrollador.Apellido;
-                Tarea AuxTarea = LiderDV.HashTable.TablaTareas.Find(x => x.Id == AuxDesarrollador.TareasDV.Get().Id);
-                return View("VerTareaDesarrollador", AuxTarea);
+                Tarea AuxTarea = LiderDV.HashTable.Mostrar().Find(x => x.Id == AuxDesarrollador.TareasDV.Get().Id);
+                if (AuxTarea != null)
+                    return View("VerTareaDesarrollador", AuxTarea);
+                else
+                {
+                    TempData["Mensaje"] = "El Desarrollador No Tiene Tareas Pendientes :)";
+                    ViewBag.Desarrolladores = LiderDV.EmpleadosDV;
+                    return View("EscogerDesarrollador");
+                }
             }
             catch (Exception)
             {
@@ -263,41 +276,57 @@ namespace EstructuraDato_Lab04.Controllers
             }
             EliminacionTareas ElimiarAux = ListaEliminacion.Find(x => x.Id == ID);
             ListaEliminacion.Remove(ElimiarAux);
-            using (StreamWriter ArchivoLimpiar = new StreamWriter(@"Documentos\\Tareas.csv"))
+            if (ListaEliminacion.Count() == 0)
             {
-                ArchivoLimpiar.WriteLine(ListaEliminacion[0].Texto);
-                ListaEliminacion.RemoveAt(0);
-                ArchivoLimpiar.Flush();
-            }
-
-            using (StreamWriter ArchivoEscritura = new StreamWriter(@"Documentos\\Tareas.csv", true))
-            {
-                foreach (EliminacionTareas item in ListaEliminacion)
+                using (StreamWriter ArchivoLimpiar = new StreamWriter(@"Documentos\\Tareas.csv"))
                 {
-                    ArchivoEscritura.WriteLineAsync(item.Texto);
-                    ArchivoEscritura.Flush();
+                    ArchivoLimpiar.WriteLine(" ");
+                    ArchivoLimpiar.Flush();
                 }
+                Tarea TareaAux1 = new Tarea();
+                LiderDV.EmpleadosDV.Find(x => x.Id == IDDV).TareasDV.Delete(TareaAux1.CompararPrioridad);
+                LiderDV.HashTable.Vaciar();
             }
-            LiderDV.EmpleadosDV.Find(x => x.Id == IDDV).TareasDV.Delete();
-            LiderDV.HashTable.TablaTareas.Clear();
-            using (TextFieldParser Archivo = new TextFieldParser(@"Documentos\\Tareas.csv"))
+            else
             {
-                Archivo.TextFieldType = FieldType.Delimited;
-                Archivo.SetDelimiters(",");
-                while (!Archivo.EndOfData)
+                using (StreamWriter ArchivoLimpiar = new StreamWriter(@"Documentos\\Tareas.csv"))
                 {
-                    string[] Texto = Archivo.ReadFields();
-                    Tarea TareaAux = new Tarea()
+                    ArchivoLimpiar.WriteLine(ListaEliminacion[0].Texto);
+                    ListaEliminacion.RemoveAt(0);
+                    ArchivoLimpiar.Flush();
+                }
+
+                using (StreamWriter ArchivoEscritura = new StreamWriter(@"Documentos\\Tareas.csv", true))
+                {
+                    foreach (EliminacionTareas item in ListaEliminacion)
                     {
-                        Titulo = Texto[1],
-                        Descripccion = Texto[2],
-                        Proyecto = Texto[3],
-                        Fecha = DateTime.Parse(Texto[4]),
-                        Id = Convert.ToInt32(Texto[0]),
-                        IdDesarrollador = Convert.ToInt32(Texto[5]),
-                        Prioridad = Convert.ToInt32(Texto[6])
-                    };
-                    LiderDV.HashTable.TablaTareas.Add(TareaAux);
+                        ArchivoEscritura.WriteLineAsync(item.Texto);
+                        ArchivoEscritura.Flush();
+                    }
+                }
+                Tarea TareaAux1 = new Tarea();
+                LiderDV.EmpleadosDV.Find(x => x.Id == IDDV).TareasDV.Delete(TareaAux1.CompararPrioridad);
+                LiderDV.HashTable.Vaciar();
+                using (TextFieldParser Archivo = new TextFieldParser(@"Documentos\\Tareas.csv"))
+                {
+                    Archivo.TextFieldType = FieldType.Delimited;
+                    Archivo.SetDelimiters(",");
+                    while (!Archivo.EndOfData)
+                    {
+                        string[] Texto = Archivo.ReadFields();
+                        Tarea TareaAux = new Tarea()
+                        {
+                            Titulo = Texto[1],
+                            Descripccion = Texto[2],
+                            Proyecto = Texto[3],
+                            Fecha = DateTime.Parse(Texto[4]),
+                            Id = Convert.ToInt32(Texto[0]),
+                            IdDesarrollador = Convert.ToInt32(Texto[5]),
+                            Prioridad = Convert.ToInt32(Texto[6])
+                        };
+                        int Pos = LiderDV.HashTable.ObtenerValorHash(TareaAux.Titulo);
+                        LiderDV.HashTable.Añadir(TareaAux, Pos, TareaAux.CompararTitulo);
+                    }
                 }
             }
             ViewBag.Desarrolladores = LiderDV.EmpleadosDV;
@@ -311,8 +340,15 @@ namespace EstructuraDato_Lab04.Controllers
                 Desarrolladores AuxDesarrollador = LiderDV.EmpleadosDV.Find(x => x.Id == idDV);
                 TareaCola AuxTareaCola = AuxDesarrollador.TareasDV.Get();
                 ViewBag.Nombre = AuxDesarrollador.Nombre + AuxDesarrollador.Apellido;
-                Tarea AuxTarea = LiderDV.HashTable.TablaTareas.Find(x => x.Id == AuxTareaCola.Id);
-                return View(AuxTarea);
+                Tarea AuxTarea = LiderDV.HashTable.Mostrar().Find(x => x.Id == AuxTareaCola.Id);
+                if (AuxTarea != null)
+                    return View("VerTareaDesarrollador", AuxTarea);
+                else
+                {
+                    TempData["Mensaje"] = "El Desarrollador No Tiene Tareas Pendientes :)";
+                    ViewBag.Desarrolladores = LiderDV.EmpleadosDV;
+                    return View("VerDesarrolladores");
+                }
             }
             catch (Exception)
             {
@@ -349,41 +385,58 @@ namespace EstructuraDato_Lab04.Controllers
             }
             EliminacionTareas ElimiarAux = ListaEliminacion.Find(x => x.Id == ID);
             ListaEliminacion.Remove(ElimiarAux);
-            using (StreamWriter ArchivoLimpiar = new StreamWriter(@"Documentos\\Tareas.csv"))
+            if (ListaEliminacion.Count() == 0)
             {
-                ArchivoLimpiar.WriteLine(ListaEliminacion[0].Texto);
-                ListaEliminacion.RemoveAt(0);
-                ArchivoLimpiar.Flush();
-            }
-               
-            using (StreamWriter ArchivoEscritura = new StreamWriter(@"Documentos\\Tareas.csv", true))
-            {
-                foreach (EliminacionTareas item in ListaEliminacion)
+                using (StreamWriter ArchivoLimpiar = new StreamWriter(@"Documentos\\Tareas.csv"))
                 {
-                    ArchivoEscritura.WriteLineAsync(item.Texto);
-                    ArchivoEscritura.Flush();
+                    ArchivoLimpiar.WriteLine(" ");
+                    ArchivoLimpiar.Flush();
                 }
+                Tarea TareaAux1 = new Tarea();
+                LiderDV.EmpleadosDV.Find(x => x.Id == IDDV).TareasDV.Delete(TareaAux1.CompararPrioridad);
+                LiderDV.HashTable.Vaciar();
             }
-            LiderDV.EmpleadosDV.Find(x => x.Id == IDDV).TareasDV.Delete();
-            LiderDV.HashTable.TablaTareas.Clear(); 
-            using (TextFieldParser Archivo = new TextFieldParser(@"Documentos\\Tareas.csv"))
+            else
             {
-                Archivo.TextFieldType = FieldType.Delimited;
-                Archivo.SetDelimiters(",");
-                while (!Archivo.EndOfData)
+                using (StreamWriter ArchivoLimpiar = new StreamWriter(@"Documentos\\Tareas.csv"))
                 {
-                    string[] Texto = Archivo.ReadFields();
-                    Tarea TareaAux = new Tarea()
+
+                    ArchivoLimpiar.WriteLine(ListaEliminacion[0].Texto);
+                    ListaEliminacion.RemoveAt(0);
+                    ArchivoLimpiar.Flush();
+                }
+
+                using (StreamWriter ArchivoEscritura = new StreamWriter(@"Documentos\\Tareas.csv", true))
+                {
+                    foreach (EliminacionTareas item in ListaEliminacion)
                     {
-                        Titulo = Texto[1],
-                        Descripccion = Texto[2],
-                        Proyecto = Texto[3],
-                        Fecha = DateTime.Parse(Texto[4]),
-                        Id = Convert.ToInt32(Texto[0]),
-                        IdDesarrollador = Convert.ToInt32(Texto[5]),
-                        Prioridad = Convert.ToInt32(Texto[6])
-                    };
-                    LiderDV.HashTable.TablaTareas.Add(TareaAux);
+                        ArchivoEscritura.WriteLineAsync(item.Texto);
+                        ArchivoEscritura.Flush();
+                    }
+                }
+                Tarea TareaAux1 = new Tarea();
+                LiderDV.EmpleadosDV.Find(x => x.Id == IDDV).TareasDV.Delete(TareaAux1.CompararPrioridad);
+                LiderDV.HashTable.Vaciar();
+                using (TextFieldParser Archivo = new TextFieldParser(@"Documentos\\Tareas.csv"))
+                {
+                    Archivo.TextFieldType = FieldType.Delimited;
+                    Archivo.SetDelimiters(",");
+                    while (!Archivo.EndOfData)
+                    {
+                        string[] Texto = Archivo.ReadFields();
+                        Tarea TareaAux = new Tarea()
+                        {
+                            Titulo = Texto[1],
+                            Descripccion = Texto[2],
+                            Proyecto = Texto[3],
+                            Fecha = DateTime.Parse(Texto[4]),
+                            Id = Convert.ToInt32(Texto[0]),
+                            IdDesarrollador = Convert.ToInt32(Texto[5]),
+                            Prioridad = Convert.ToInt32(Texto[6])
+                        };
+                        int Pos = LiderDV.HashTable.ObtenerValorHash(TareaAux.Titulo);
+                        LiderDV.HashTable.Añadir(TareaAux, Pos, TareaAux.CompararTitulo);
+                    }
                 }
             }
             return View("IndexEncargado",LiderDV);

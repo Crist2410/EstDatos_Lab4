@@ -7,75 +7,135 @@ using EstructuraDato_Lab04.LibreriaGenericos.Interfaces;
 
 namespace EstructuraDato_Lab04.LibreriaGenericos.Estructuras
 {
-    public class ColaPrioridad<T> :EstructuraBase<T> , IEnumerable<T>
+    //INICIO COLA
+    public class ColaPrioridad<T> : EstructuraBase<T>
     {
-        private Nodo<T> First { get; set; }
-        public void Add(T value)
+        Nodo<T> Raiz = new Nodo<T>();
+        int TotalNodos;
+        bool Incertado;
+        public void Add(T Valor, Delegate Delegado)
         {
-            Insertar(value);
+            TotalNodos++;
+            Incertado = false;
+            Insertar(Valor, Delegado, Raiz);
         }
         public T Get()
         {
             return Obtener();
         }
-        public T Delete()
+        public T Delete(Delegate Delegado)
         {
-            var Valor = Obtener();
-            Borrar();
-            return Valor;
-        }
-        protected override void Insertar(T value)
-        {
-            if (First == null)
+            Nodo<T> AuxNodo = new Nodo<T>() { Valor = Obtener() };
+            if (TotalNodos == 1)
             {
-                First = new Nodo<T>
-                {
-                    Valor = value,
-                    Siguiente = null
-                };
+                Raiz = new Nodo<T>();
+                TotalNodos--;
             }
             else
             {
-                var current = First;
-                while (current.Siguiente != null)
-                {
-                    current = current.Siguiente;
-                }
-                current.Siguiente = new Nodo<T>
-                {
-                    Valor = value,
-                    Siguiente = null
-                };
+                Borrar(Raiz, 1);
+                BorraBalanceo(Delegado, Raiz);
+            }
+            return AuxNodo.Valor;
+        }
+        private void Ordenamiento(Delegate Delegado, Nodo<T> NodoRaiz)
+        {
+            Nodo<T> AuxNodo = new Nodo<T>();
+            AuxNodo.Valor = NodoRaiz.Valor;
+            if (NodoRaiz.Izquierda.Valor != null && Convert.ToInt32(Delegado.DynamicInvoke(NodoRaiz.Izquierda.Valor, NodoRaiz.Valor)) == 1)
+            {
+                NodoRaiz.Valor = NodoRaiz.Izquierda.Valor;
+                NodoRaiz.Izquierda.Valor = AuxNodo.Valor;
+            }
+            else if (NodoRaiz.Derecha.Valor != null && Convert.ToInt32(Delegado.DynamicInvoke(NodoRaiz.Derecha.Valor, NodoRaiz.Valor)) == 1)
+            {
+                NodoRaiz.Valor = NodoRaiz.Derecha.Valor;
+                NodoRaiz.Derecha.Valor = AuxNodo.Valor;
+            }
+        }
+        protected override void Insertar(T Valor, Delegate Delegado, Nodo<T> NodoRaiz)
+        {
+            if (NodoRaiz.Valor == null)
+            {
+                NodoRaiz.Valor = Valor;
+                NodoRaiz.Izquierda = new Nodo<T>();
+                NodoRaiz.Derecha = new Nodo<T>();
+                NodoRaiz.Posicion = TotalNodos;
+                Incertado = true;
+            }
+            else if (NodoRaiz.Derecha.Valor != null && NodoRaiz.Izquierda.Valor != null)
+            {
+                Insertar(Valor, Delegado, NodoRaiz.Izquierda);
+                if (!Incertado)
+                    Insertar(Valor, Delegado, NodoRaiz.Derecha);
+            }
+            else if (NodoRaiz.Izquierda.Valor == null && (TotalNodos) / 2 == NodoRaiz.Posicion)
+            {
+                Insertar(Valor, Delegado, NodoRaiz.Izquierda);
+            }
+            else if (NodoRaiz.Derecha.Valor == null && (TotalNodos - 1) / 2 == NodoRaiz.Posicion)
+            {
+                Insertar(Valor, Delegado, NodoRaiz.Derecha);
+            }
+            if (NodoRaiz.Derecha.Valor != null || NodoRaiz.Izquierda.Valor != null)
+                Ordenamiento(Delegado, NodoRaiz);
+        }
+        private int ObtenerNivel(int Inicio)
+        {
+            int Nivel = Convert.ToInt32(Math.Truncate(Math.Log(TotalNodos) / Math.Log(2)));
+            int Valor = TotalNodos;
+            for (int i = Inicio; i < Nivel; i++)
+                Valor /= 2;
+            return Valor;
+        }
+        private void BorraBalanceo(Delegate Delegado, Nodo<T> NodoRaiz)
+        {
+            Nodo<T> AuxNodo = new Nodo<T>();
+            AuxNodo.Valor = NodoRaiz.Valor;
+            if (NodoRaiz.Izquierda.Valor != null && Convert.ToInt32(Delegado.DynamicInvoke(NodoRaiz.Izquierda.Valor, NodoRaiz.Valor)) == 1 &&
+                Convert.ToInt32(Delegado.DynamicInvoke(NodoRaiz.Izquierda.Valor, NodoRaiz.Derecha.Valor)) == 1)
+            {
+                NodoRaiz.Valor = NodoRaiz.Izquierda.Valor;
+                NodoRaiz.Izquierda.Valor = AuxNodo.Valor;
+                BorraBalanceo(Delegado, NodoRaiz.Izquierda);
+            }
+            else if (NodoRaiz.Derecha.Valor != null && Convert.ToInt32(Delegado.DynamicInvoke(NodoRaiz.Derecha.Valor, NodoRaiz.Valor)) == 1 &&
+                Convert.ToInt32(Delegado.DynamicInvoke(NodoRaiz.Derecha.Valor, NodoRaiz.Izquierda.Valor)) == 1)
+            {
+                NodoRaiz.Valor = NodoRaiz.Derecha.Valor;
+                NodoRaiz.Derecha.Valor = AuxNodo.Valor;
+                BorraBalanceo(Delegado, NodoRaiz.Derecha);
             }
         }
 
-
-        protected override void Borrar()
+        protected override void Borrar(Nodo<T> NodoRaiz, int Inicio)
         {
-            if (First != null)
+            int Posicion = ObtenerNivel(Inicio);
+            if (NodoRaiz.Posicion == TotalNodos)
             {
-                First = First.Siguiente;
+                if (TotalNodos == 1)
+                    Raiz = new Nodo<T>();
+                Raiz.Valor = NodoRaiz.Valor;
+                TotalNodos--;
+            }
+            else if (NodoRaiz.Derecha.Posicion == Posicion)
+            {
+                Borrar(NodoRaiz.Derecha, ++Inicio);
+                if (NodoRaiz.Derecha.Posicion == (TotalNodos + 1))
+                    NodoRaiz.Derecha = new Nodo<T>();
+            }
+            else if (NodoRaiz.Izquierda.Posicion == Posicion)
+            {
+                Borrar(NodoRaiz.Izquierda, ++Inicio);
+                if (NodoRaiz.Izquierda.Posicion == (TotalNodos + 1))
+                    NodoRaiz.Izquierda = new Nodo<T>();
             }
 
         }
 
         protected override T Obtener()
         {
-            return First.Valor;
-        }
-
-        public IEnumerator<T> GetEnumerator()
-        {
-            var queueCopy = this;
-            while (queueCopy.First != null)
-            {
-                yield return queueCopy.Delete();
-            }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
+            return Raiz.Valor;
         }
     }
 }

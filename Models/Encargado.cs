@@ -1,4 +1,5 @@
 ﻿using EstructuraDato_Lab04.LibreriaGenericos.Estructuras;
+using EstructuraDato_Lab04.Clases;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace EstructuraDato_Lab04.Models
 
         public List<Desarrolladores> EmpleadosDV = new List<Desarrolladores>();
         // La lista de tareas debe ser una tabla Hash
-        public TablaHash HashTable = new TablaHash();
+        public TablaHash<Tarea> HashTable = new TablaHash<Tarea>();
 
     }
 }
